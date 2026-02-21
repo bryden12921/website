@@ -1,0 +1,461 @@
+
+package.json
+==================================================
+{
+  "name": "olivier-mudagiri-website",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "typescript": "^5.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@vitejs/plugin-react": "^4.0.0"
+  }
+}
+
+==================================================
+tsconfig.json
+==================================================
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "ES2022"],
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "include": ["src"]
+}
+
+==================================================
+vite.config.ts
+==================================================
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  server: { port: 5173 }
+});
+
+==================================================
+index.html
+==================================================
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Olivier Mudagiri — Notary & Real Estate</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+==================================================
+src/types/index.ts
+==================================================
+export type Page = 'home' | 'about' | 'services' | 'contact';
+
+==================================================
+src/main.tsx
+==================================================
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+import './styles/globals.css';
+
+createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+==================================================
+src/App.tsx
+==================================================
+import React, { useState } from 'react';
+import Home from './pages/Home';
+import About from './pages/About';
+import Services from './pages/Services';
+import Contact from './pages/Contact';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import { Page } from './types';
+
+export default function App() {
+  const [page, setPage] = useState<Page>('home');
+  return (
+    <div className="app">
+      <Header onNavigate={setPage} />
+      <main className="container">
+        {page === 'home' && <Home />}
+        {page === 'about' && <About />}
+        {page === 'services' && <Services />}
+        {page === 'contact' && <Contact />}
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+==================================================
+src/pages/Home.tsx
+==================================================
+import React from 'react';
+
+export default function Home() {
+  return (
+    <section>
+      <header className="hero">
+        <h1>Olivier Mudagiri</h1>
+        <p className="subtitle">Private Land Notary & Real Estate Professional — Kigali, Rwanda</p>
+      </header>
+      <div className="card">
+        <h2>Trusted Notary & Property Advisor</h2>
+        <p>
+          Authorized Private Land Notary listed by MINIJUST and the Rwanda Land Management & Use Authority.
+          Office: 2nd Floor, KG 175 (near Nobiscum House), Kigali.
+        </p>
+        <ul>
+          <li>Phone: <a href="tel:+250788641393">+250 788 641 393</a></li>
+          <li>Email: <a href="mailto:oliviermudagire@gmail.com">oliviermudagire@gmail.com</a></li>
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+==================================================
+src/pages/About.tsx
+==================================================
+import React from 'react';
+
+export default function About() {
+  return (
+    <section>
+      <h2>About Olivier</h2>
+      <p>
+        Olivier Mudagiri holds a Bachelor's degree from the University of Lay Adventists of Kigali (UNILAK).
+        He has a background in banking (Ecobank) and currently serves clients at Workers Affordable Properties.
+      </p>
+      <h3>Core values</h3>
+      <ul>
+        <li>Integrity</li>
+        <li>Reliability</li>
+        <li>Client-focused service</li>
+      </ul>
+    </section>
+  );
+}
+
+==================================================
+src/pages/Services.tsx
+==================================================
+import React from 'react';
+import { services } from '../data/services';
+import ServiceCard from '../components/ServiceCard';
+
+export default function Services() {
+  return (
+    <section>
+      <h2>Services</h2>
+      <div className="grid">
+        {services.map((s) => (
+          <ServiceCard key={s.id} title={s.title} desc={s.description} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+==================================================
+src/pages/Contact.tsx
+==================================================
+import React from 'react';
+import ContactForm from '../components/ContactForm';
+
+export default function Contact() {
+  return (
+    <section>
+      <h2>Contact</h2>
+      <p>Office: 2nd Floor, KG 175, near Nobiscum House — Kigali</p>
+      <p>Phone: <a href="tel:+250788641393">+250 788 641 393</a></p>
+      <p>Email: <a href="mailto:oliviermudagire@gmail.com">oliviermudagire@gmail.com</a></p>
+      <p>
+        WhatsApp: <a href="https://wa.me/250788641393" target="_blank" rel="noreferrer">Chat on WhatsApp</a>
+      </p>
+      <ContactForm />
+    </section>
+  );
+}
+
+==================================================
+src/components/Header.tsx
+==================================================
+import React from 'react';
+import { Page } from '../types';
+
+export default function Header({ onNavigate }: { onNavigate: (page: Page) => void }) {
+  return (
+    <header className="site-header">
+      <div className="brand" onClick={() => onNavigate('home')} role="button" tabIndex={0}>
+        Olivier Mudagiri
+      </div>
+      <nav>
+        <button onClick={() => onNavigate('home')}>Home</button>
+        <button onClick={() => onNavigate('about')}>About</button>
+        <button onClick={() => onNavigate('services')}>Services</button>
+        <button onClick={() => onNavigate('contact')}>Contact</button>
+      </nav>
+    </header>
+  );
+}
+
+==================================================
+src/components/Footer.tsx
+==================================================
+import React from 'react';
+
+export default function Footer() {
+  return (
+    <footer className="site-footer">
+      <small>© {new Date().getFullYear()} Olivier Mudagiri — Private Land Notary</small>
+    </footer>
+  );
+}
+
+==================================================
+src/components/ServiceCard.tsx
+==================================================
+import React from 'react';
+
+export default function ServiceCard({ title, desc }: { title: string; desc: string }) {
+  return (
+    <article className="service-card">
+      <h4>{title}</h4>
+      <p>{desc}</p>
+    </article>
+  );
+}
+
+==================================================
+src/components/ContactForm.tsx
+==================================================
+import React, { useState } from 'react';
+
+export default function ContactForm() {
+  const [name, setName] = useState('');
+  const [msg, setMsg] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const subject = encodeURIComponent(`Website inquiry from ${name || 'Visitor'}`);
+    const body = encodeURIComponent(msg || 'Hello Olivier,');
+    window.location.href = `mailto:oliviermudagire@gmail.com?subject=${subject}&body=${body}`;
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="contact-form">
+      <label>
+        Name
+        <input value={name} onChange={(e) => setName(e.target.value)} />
+      </label>
+      <label>
+        Message
+        <textarea value={msg} onChange={(e) => setMsg(e.target.value)} />
+      </label>
+      <button type="submit">Send Email</button>
+    </form>
+  );
+}
+
+==================================================
+src/data/services.ts
+==================================================
+export const services = [
+  {
+    id: 'notary-1',
+    title: 'Land Title Notarization',
+    description: 'Official notarization of land transfers, title authentication and registration support.'
+  },
+  {
+    id: 'notary-2',
+    title: 'Power of Attorney',
+    description: 'Drafting and certification of Power of Attorney documents for land and property matters.'
+  },
+  {
+    id: 'real-1',
+    title: 'Real Estate Consulting',
+    description: 'Property search support and guidance through Workers Affordable Properties projects.'
+  },
+  {
+    id: 'doc-1',
+    title: 'Contract Certification',
+    description: 'Authentication of sales agreements, MoUs and employment contracts.'
+  }
+];
+
+==================================================
+src/styles/globals.css
+==================================================
+:root {
+  --bg: #f7f8fb;
+  --card: #fff;
+  --accent: #0b3d91;
+  --muted: #555;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: Inter, Segoe UI, Arial, sans-serif;
+  background: var(--bg);
+  color: #111;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.site-header .brand {
+  font-weight: 700;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.site-header nav button {
+  margin-left: .5rem;
+  padding: .4rem .6rem;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.container {
+  flex: 1;
+  padding: 1.25rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero {
+  padding: 1.5rem 0;
+}
+
+.hero h1 {
+  margin: .2rem 0;
+  font-size: 1.6rem;
+}
+
+.subtitle {
+  color: var(--muted);
+}
+
+.card {
+  background: var(--card);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(11, 61, 145, 0.06);
+  margin-top: 1rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.service-card {
+  background: var(--card);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.site-footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: .9rem;
+  color: var(--muted);
+  border-top: 1px solid #eee;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  margin-top: 1rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+  padding: .5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.contact-form button {
+  align-self: flex-start;
+  padding: .5rem .8rem;
+  background: var(--accent);
+  color: white;
+  border: 0;
+  border-radius: 6px;
+}
+
+a {
+  color: var(--accent);
+}
+
+==================================================
+README.md
+==================================================
+# Olivier Mudagiri - Notary & Real Estate Website
+
+## Quick Start
+1. Install dependencies: `npm install`
+2. Run development server: `npm run dev`
+3. Open http://localhost:5173
+
+## Build for production
+```bash
+npm run build
